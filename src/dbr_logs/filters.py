@@ -26,14 +26,14 @@ def build_filter(
 
     if levels:
         level_ints = {LEVEL_NAME_MAP[lv.upper()] for lv in levels if lv.upper() in LEVEL_NAME_MAP}
-        predicates.append(lambda entries, lv=level_ints: _level_filter(entries, lv))
+        predicates.append(lambda entries, lv=level_ints: _level_filter(entries, lv))  # type: ignore[misc]
 
     if grep_pattern:
         compiled = re.compile(grep_pattern)
-        predicates.append(lambda entries, p=compiled: _grep_filter(entries, p))
+        predicates.append(lambda entries, p=compiled: _grep_filter(entries, p))  # type: ignore[misc]
 
     if since:
-        predicates.append(lambda entries, s=since: _since_filter(entries, s))
+        predicates.append(lambda entries, s=since: _since_filter(entries, s))  # type: ignore[misc]
 
     def apply_all(entries: list[LogEntry]) -> list[LogEntry]:
         result = entries

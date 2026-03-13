@@ -103,7 +103,7 @@ def main(
     write_entries(filtered, fmt)
 
 
-def _resolve_profile(override: str | None, config: dict) -> str | None:
+def _resolve_profile(override: str | None, config: dict[str, object]) -> str | None:
     if override:
         return override
 

@@ -2,6 +2,7 @@ import subprocess
 import sys
 import tomllib
 from pathlib import Path
+from typing import Any
 
 import click
 
@@ -9,25 +10,27 @@ CONFIG_DIR = Path("~/.config/dbr-logs").expanduser()
 CONFIG_PATH = CONFIG_DIR / "config.toml"
 
 
-def load_config() -> dict:
+def load_config() -> dict[str, Any]:
     if not CONFIG_PATH.exists():
         return {}
     with open(CONFIG_PATH, "rb") as f:
         return tomllib.load(f)
 
 
-def save_config(config: dict) -> None:
+def save_config(config: dict[str, Any]) -> None:
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     lines = _serialize_toml(config)
     CONFIG_PATH.write_text(lines)
 
 
-def get_default_profile(config: dict) -> str | None:
-    return config.get("profile", {}).get("default")
+def get_default_profile(config: dict[str, Any]) -> str | None:
+    profile: str | None = config.get("profile", {}).get("default")
+    return profile
 
 
-def get_default_env(config: dict) -> str:
-    return config.get("defaults", {}).get("env", "prod")
+def get_default_env(config: dict[str, Any]) -> str:
+    env: str = config.get("defaults", {}).get("env", "prod")
+    return env
 
 
 def list_databricks_profiles() -> list[str]:
@@ -82,7 +85,7 @@ def interactive_profile_setup(available_profiles: list[str]) -> str:
         print("Invalid selection, try again.", file=sys.stderr)
 
 
-def _serialize_toml(data: dict, prefix: str = "") -> str:
+def _serialize_toml(data: dict[str, Any], prefix: str = "") -> str:
     lines: list[str] = []
     scalars = {k: v for k, v in data.items() if not isinstance(v, dict)}
     tables = {k: v for k, v in data.items() if isinstance(v, dict)}
