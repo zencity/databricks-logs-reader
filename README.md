@@ -4,15 +4,22 @@ Fetch and display Databricks job logs from Unity Catalog Volumes.
 
 Merges driver and executor logs chronologically with source labels, so you can pipe them to `grep`, `jq`, or feed them to an LLM.
 
-## Installation
+## Prerequisites
 
-Requires Python 3.11+ and a configured [Databricks CLI](https://docs.databricks.com/dev-tools/cli/index.html).
+- **Python 3.11+** (tested on 3.11, 3.12, 3.13, 3.14)
+- **Databricks CLI** configured with at least one profile in `~/.databrickscfg` ([setup guide](https://docs.databricks.com/dev-tools/cli/index.html))
+- **Unity Catalog Volumes** log destination configured on your Databricks jobs (`cluster_log_conf` pointing to a Volumes path)
+
+## Installation
 
 ```bash
 # Install with uv
 uv tool install .
 
-# Or run directly
+# Or with pip
+pip install .
+
+# Or run directly without installing
 uvx --from . dbr-logs <job-name>
 ```
 
