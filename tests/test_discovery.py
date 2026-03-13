@@ -64,9 +64,7 @@ class TestClassifyDriverFile:
         assert result[0] == "stacktrace"
 
     def test_unknown_file_ignored(self) -> None:
-        result = _classify_driver_file(
-            "eventlog", include_log4j=False, include_stacktrace=False
-        )
+        result = _classify_driver_file("eventlog", include_log4j=False, include_stacktrace=False)
         assert result is None
 
 

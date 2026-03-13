@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(databricks --version 2>/dev/null || echo \"databricks cli not found\")"
+    ]
+  }
+}

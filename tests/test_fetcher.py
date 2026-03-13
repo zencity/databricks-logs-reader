@@ -67,10 +67,14 @@ class TestApplySourceFilter:
         assert result[0][0].source_detail == "3"
 
     def test_stream_filter(self) -> None:
-        source = _make_source("driver", "", [
-            _make_file("d/stderr", "stderr"),
-            _make_file("d/stdout", "stdout"),
-        ])
+        source = _make_source(
+            "driver",
+            "",
+            [
+                _make_file("d/stderr", "stderr"),
+                _make_file("d/stdout", "stdout"),
+            ],
+        )
         result = _apply_source_filter([source], "all", "stderr")
         assert len(result) == 1
         assert result[0][1].stream == "stderr"

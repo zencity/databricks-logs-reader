@@ -57,9 +57,7 @@ class TestResolveRun:
             "my-spark-job",
             "dbfs:/Volumes/catalog/schema/logs/my-spark-job",
         )
-        client.get_log_destination.return_value = (
-            "dbfs:/Volumes/catalog/schema/logs/my-spark-job"
-        )
+        client.get_log_destination.return_value = "dbfs:/Volumes/catalog/schema/logs/my-spark-job"
         client.get_run_cluster_id.return_value = "0311-170011-t5450avl"
         client.get_latest_run.return_value = RunCluster(
             run_id=100, cluster_id="0311-170011-t5450avl"

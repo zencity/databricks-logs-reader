@@ -57,13 +57,15 @@ def _discover_driver(
         classified = _classify_driver_file(entry.name, include_log4j, include_stacktrace)
         if classified:
             stream, is_compressed, is_active, file_ts = classified
-            source.files.append(LogFile(
-                path=f"{driver_path}/{entry.name}",
-                stream=stream,
-                is_compressed=is_compressed,
-                is_active=is_active,
-                file_timestamp=file_ts,
-            ))
+            source.files.append(
+                LogFile(
+                    path=f"{driver_path}/{entry.name}",
+                    stream=stream,
+                    is_compressed=is_compressed,
+                    is_active=is_active,
+                    file_timestamp=file_ts,
+                )
+            )
 
     source.files.sort(key=lambda f: (f.stream, f.file_timestamp or datetime.max))
     return source
@@ -108,13 +110,15 @@ def _discover_single_executor(
         classified = _classify_executor_file(entry.name)
         if classified:
             stream, is_compressed, is_active, file_ts = classified
-            source.files.append(LogFile(
-                path=f"{exec_path}/{entry.name}",
-                stream=stream,
-                is_compressed=is_compressed,
-                is_active=is_active,
-                file_timestamp=file_ts,
-            ))
+            source.files.append(
+                LogFile(
+                    path=f"{exec_path}/{entry.name}",
+                    stream=stream,
+                    is_compressed=is_compressed,
+                    is_active=is_active,
+                    file_timestamp=file_ts,
+                )
+            )
 
     source.files.sort(key=lambda f: (f.stream, f.file_timestamp or datetime.max))
     return source
@@ -170,8 +174,12 @@ def _parse_driver_rotation_ts(m: re.Match[str]) -> datetime | None:
         minute = int(m.group(4)) if m.group(4) else 0
         parts = date_str.split("-")
         return datetime(
-            int(parts[0]), int(parts[1]), int(parts[2]),
-            hour, minute, tzinfo=UTC,
+            int(parts[0]),
+            int(parts[1]),
+            int(parts[2]),
+            hour,
+            minute,
+            tzinfo=UTC,
         )
     except (ValueError, IndexError):
         return None
@@ -183,8 +191,11 @@ def _parse_executor_rotation_ts(m: re.Match[str]) -> datetime | None:
         hour = int(m.group(3))
         parts = date_str.split("-")
         return datetime(
-            int(parts[0]), int(parts[1]), int(parts[2]),
-            hour, tzinfo=UTC,
+            int(parts[0]),
+            int(parts[1]),
+            int(parts[2]),
+            hour,
+            tzinfo=UTC,
         )
     except (ValueError, IndexError):
         return None
@@ -194,8 +205,11 @@ def _parse_hourly_ts(ts_str: str) -> datetime | None:
     try:
         parts = ts_str.split("-")
         return datetime(
-            int(parts[0]), int(parts[1]), int(parts[2]),
-            int(parts[3]), tzinfo=UTC,
+            int(parts[0]),
+            int(parts[1]),
+            int(parts[2]),
+            int(parts[3]),
+            tzinfo=UTC,
         )
     except (ValueError, IndexError):
         return None

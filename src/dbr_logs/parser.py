@@ -4,19 +4,13 @@ from datetime import UTC, datetime
 
 from dbr_logs.models import LogEntry, LogFile, LogSource
 
-SPARK_LOG_RE = re.compile(
-    r"(\d{2}/\d{2}/\d{2} \d{2}:\d{2}:\d{2})"
-)
+SPARK_LOG_RE = re.compile(r"(\d{2}/\d{2}/\d{2} \d{2}:\d{2}:\d{2})")
 SPARK_LOG_FMT = "%y/%m/%d %H:%M:%S"
 
-ISO_BRACKET_RE = re.compile(
-    r"\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})[+\-]\d{4}\]"
-)
+ISO_BRACKET_RE = re.compile(r"\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})[+\-]\d{4}\]")
 ISO_BRACKET_FMT = "%Y-%m-%dT%H:%M:%S.%f"
 
-LOG4J_RE = re.compile(
-    r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})"
-)
+LOG4J_RE = re.compile(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})")
 LOG4J_FMT = "%Y-%m-%d %H:%M:%S,%f"
 
 LEVEL_RE = re.compile(r"\b(ERROR|WARN(?:ING)?|INFO|DEBUG)\b")

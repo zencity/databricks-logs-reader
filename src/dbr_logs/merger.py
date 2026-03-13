@@ -16,9 +16,7 @@ def merge_entries(entries_by_file: list[list[LogEntry]]) -> list[LogEntry]:
     keyed_iterables = []
     for file_idx, file_entries in enumerate(entries_by_file):
         file_ts = _first_known_timestamp(file_entries)
-        keyed_iterables.append(
-            _keyed_entries(file_entries, file_ts, file_idx)
-        )
+        keyed_iterables.append(_keyed_entries(file_entries, file_ts, file_idx))
 
     merged = merge(*keyed_iterables, key=lambda x: x[0])
     return [entry for _, entry in merged]

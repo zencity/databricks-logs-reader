@@ -21,8 +21,7 @@ def fetch_sources(
     results: dict[str, str] = {}
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = {
-            executor.submit(_fetch_file, client, log_file): log_file
-            for _, log_file in pairs
+            executor.submit(_fetch_file, client, log_file): log_file for _, log_file in pairs
         }
         for future in as_completed(futures):
             log_file = futures[future]
