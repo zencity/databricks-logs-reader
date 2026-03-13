@@ -73,12 +73,12 @@ def interactive_profile_setup(available_profiles: list[str]) -> str:
                 save_config(config)
                 print(f"Saved default profile: {selected}", file=sys.stderr)
                 return selected
-        except (ValueError, EOFError, KeyboardInterrupt):
+        except (ValueError, EOFError, KeyboardInterrupt) as err:
             if not sys.stdin.isatty():
                 raise click.UsageError(
                     "Multiple profiles found but no TTY for interactive selection. "
                     f"Use --dbr-profile with one of: {', '.join(available_profiles)}"
-                )
+                ) from err
         print("Invalid selection, try again.", file=sys.stderr)
 
 

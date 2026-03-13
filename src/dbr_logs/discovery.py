@@ -152,7 +152,8 @@ def _classify_driver_file(
 def _classify_executor_file(
     name: str,
 ) -> tuple[Stream, bool, bool, datetime | None] | None:
-    for pattern, stream in [(EXECUTOR_STDERR_RE, Stream.STDERR), (EXECUTOR_STDOUT_RE, Stream.STDOUT)]:
+    patterns = [(EXECUTOR_STDERR_RE, Stream.STDERR), (EXECUTOR_STDOUT_RE, Stream.STDOUT)]
+    for pattern, stream in patterns:
         m = pattern.match(name)
         if m:
             is_active = m.group(1) is None and m.group(4) is None
