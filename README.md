@@ -106,7 +106,8 @@ dbr-logs my-job-name --since 1h
 
 ```bash
 # Option 1: Claude Code Plugin
-/plugin add zencity/databricks-logs-reader
+/marketplace add https://github.com/zencity/databricks-logs-reader
+/plugin add dbr-logs
 
 # Option 2: skills.sh (works with Claude Code, Cursor, Windsurf, etc.)
 npx skills add zencity/databricks-logs-reader
