@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "plugins": [
+    {
+      "name": "dbr-logs",
+      "source": "."
+    }
+  ]
+}
