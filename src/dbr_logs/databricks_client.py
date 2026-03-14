@@ -156,9 +156,13 @@ class DatabricksClient:
             if log_conf.dbfs and log_conf.dbfs.destination:
                 return log_conf.dbfs.destination.rstrip("/")
             if log_conf.s3 and log_conf.s3.destination:
+                dest = log_conf.s3.destination.rstrip("/")
                 raise click.UsageError(
-                    f"Job {job_id} uses S3 log destination ({log_conf.s3.destination}). "
-                    "S3 paths are not yet supported — only Unity Catalog Volumes."
+                    f"Job {job_id} uses S3 log destination ({dest}). "
+                    "S3 paths are not accessible via the Databricks SDK.\n\n"
+                    "Workaround: create a Unity Catalog external volume over "
+                    "the same S3 bucket, then switch the job's cluster_log_conf "
+                    "to use that volume path instead."
                 )
         raise click.UsageError(f"Job {job_id} has no cluster_log_conf configured")
 
