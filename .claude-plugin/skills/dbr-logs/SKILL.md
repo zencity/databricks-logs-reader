@@ -47,43 +47,48 @@ For the rest of these instructions, `DBR_LOGS` refers to whichever invocation me
 
 Run `DBR_LOGS` with appropriate flags. **Always use `--format jsonl`** when you (Claude) are consuming the output — structured data is easier to analyze. Use `--format text` only when the user wants raw output displayed directly.
 
-**Priority: match the user's intent.** This tool is not just for error analysis. If the user asks to search for a specific string, pattern, or log message, use `--grep` and do NOT add `--level` filtering — the match may appear at any log level (INFO, DEBUG, etc.). Only default to `--level ERROR,WARN` when the user asks about failures/errors without specifying what to search for. Similarly, if the user specifies a source (e.g. "executor logs"), honor that with `--source` rather than fetching all sources.
+**Priority: match the user's intent.** If the user asks to search for a specific string or pattern, pipe the output to `grep` rather than adding `--level` filtering — the match may appear at any log level (INFO, DEBUG, etc.). Only default to `--level ERROR,WARN` when the user asks about failures/errors without specifying what to search for. Similarly, if the user specifies a source (e.g. "executor logs"), honor that with `--source` rather than fetching all sources.
+
+**Always use `--focus`** unless the user explicitly asks for raw/unfiltered output. This suppresses Spark/JVM noise (thread dumps, shuffle lifecycle, task assignments) that buries application logs.
 
 ### Common patterns
 
 ```bash
 # User asks about errors/failures (no specific search term)
-DBR_LOGS <job-name> --level ERROR,WARN --format jsonl
+DBR_LOGS <job-name> --level ERROR,WARN --focus --format jsonl
 
 # Specific run
-DBR_LOGS <job-name> --run-id <run-id> --level ERROR,WARN --format jsonl
+DBR_LOGS <job-name> --run-id <run-id> --level ERROR,WARN --focus --format jsonl
 
 # User says "check executor logs" (honor the source, fetch all levels)
-DBR_LOGS <job-name> --source executor --format jsonl
+DBR_LOGS <job-name> --source executor --focus --format jsonl
 
 # Executor errors specifically
-DBR_LOGS <job-name> --source executor --level ERROR,WARN --format jsonl
+DBR_LOGS <job-name> --source executor --level ERROR,WARN --focus --format jsonl
 
 # Single executor deep dive
-DBR_LOGS <job-name> --source executor:3 --format jsonl
+DBR_LOGS <job-name> --source executor:3 --focus --format jsonl
 
-# User asks to search for a specific string (no --level, it may not be an error)
-DBR_LOGS <job-name> --grep "partition count" --format jsonl
+# User asks to search for a specific string (pipe to grep, no --level)
+DBR_LOGS <job-name> --focus --format jsonl | grep "partition count"
 
 # Search for a specific error pattern
-DBR_LOGS <job-name> --grep "OutOfMemoryError" --format jsonl
+DBR_LOGS <job-name> --focus --format jsonl | grep "OutOfMemoryError"
 
 # Driver only
-DBR_LOGS <job-name> --source driver --format jsonl
+DBR_LOGS <job-name> --source driver --focus --format jsonl
 
 # Include log4j or stacktrace files
-DBR_LOGS <job-name> --include-log4j --include-stacktrace --format jsonl
+DBR_LOGS <job-name> --include-log4j --include-stacktrace --focus --format jsonl
 
 # Logs from the last hour
-DBR_LOGS <job-name> --since 1h --format jsonl
+DBR_LOGS <job-name> --since 1h --focus --format jsonl
 
 # Staging environment
-DBR_LOGS <job-name> --env staging --format jsonl
+DBR_LOGS <job-name> --env staging --focus --format jsonl
+
+# Raw unfiltered output (no noise suppression)
+DBR_LOGS <job-name> --format jsonl
 ```
 
 ### CLI reference
@@ -96,13 +101,13 @@ DBR_LOGS <job-name> --env staging --format jsonl
 | `--dbr-profile` | `-p` | Databricks CLI profile name |
 | `--source` | `-s` | `driver`, `executor`, `executor:N`, `all` (default) |
 | `--stream` | | `stderr`, `stdout`, `all` (default) |
-| `--level` | `-l` | Comma-separated: `ERROR`, `WARN`, `INFO`, `DEBUG` |
-| `--grep` | `-g` | Filter lines matching regex pattern |
+| `--level` | `-l` | Exact match, comma-separated: `ERROR`, `WARN`, `INFO`, `DEBUG` |
 | `--include-log4j` | | Include driver log4j files |
 | `--include-stacktrace` | | Include driver stacktrace files |
 | `--format` | `-f` | `text` or `jsonl` |
 | `--tail` | `-n` | Show only last N lines |
 | `--since` | | Logs since time (e.g. `1h`, `30m`, ISO datetime) |
+| `--focus` | | Suppress Spark/JVM noise (thread dumps, shuffle, task lifecycle) |
 
 ## Step 3: Analyze the output
 

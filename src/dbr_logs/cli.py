@@ -15,6 +15,7 @@ from dbr_logs.fetcher import fetch_sources
 from dbr_logs.filters import build_filter, parse_since
 from dbr_logs.formatter import write_entries
 from dbr_logs.merger import merge_entries
+from dbr_logs.noise import build_quiet_filter
 from dbr_logs.parser import parse_entries
 from dbr_logs.resolver import resolve_run
 
@@ -26,7 +27,12 @@ from dbr_logs.resolver import resolve_run
 @click.option("--dbr-profile", "-p", default=None, help="Databricks CLI profile name")
 @click.option("--source", "-s", default="all", help="driver, executor, executor:N, all")
 @click.option("--stream", default="all", help="stderr, stdout, all")
-@click.option("--level", "-l", default=None, help="Exact match, comma-separated: ERROR,WARN,INFO,DEBUG (e.g. WARN,ERROR for both)")
+@click.option(
+    "--level",
+    "-l",
+    default=None,
+    help="Exact match, comma-separated: ERROR,WARN,INFO,DEBUG (e.g. WARN,ERROR for both)",
+)
 @click.option("--include-log4j", is_flag=True, default=False, help="Include driver log4j files")
 @click.option(
     "--include-stacktrace", is_flag=True, default=False, help="Include driver stacktrace files"
@@ -41,6 +47,12 @@ from dbr_logs.resolver import resolve_run
 )
 @click.option("--tail", "-n", default=None, type=int, help="Show only last N lines")
 @click.option("--since", default=None, help="Show logs since time (e.g. 1h, 30m, ISO datetime)")
+@click.option(
+    "--focus",
+    is_flag=True,
+    default=False,
+    help="Suppress Spark/JVM noise (thread dumps, shuffle, task lifecycle)",
+)
 def main(
     job_input: str,
     run_id: str | None,
@@ -54,6 +66,7 @@ def main(
     fmt: str,
     tail: int | None,
     since: str | None,
+    focus: bool,
 ) -> None:
     """Fetch and display Databricks job logs.
 
@@ -95,6 +108,10 @@ def main(
 
     levels = [lv.strip() for lv in level.split(",")] if level else None
     since_dt = parse_since(since) if since else None
+    if focus:
+        quiet_filter = build_quiet_filter()
+        merged = quiet_filter(merged)
+
     filter_fn = build_filter(levels, since_dt, tail)
     filtered = filter_fn(merged)
 

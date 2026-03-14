@@ -82,6 +82,9 @@ dbr-logs "https://dbc-xxx.cloud.databricks.com/jobs/12345/runs/67890?o=123"
 # Show only errors
 dbr-logs my-job-name --level ERROR
 
+# Focus on application logs (suppress Spark/JVM noise)
+dbr-logs my-job-name --focus
+
 # Show only executor logs
 dbr-logs my-job-name --source executor
 
@@ -117,7 +120,7 @@ The CLI tool still needs to be installed separately (`pip install dbr-logs` or `
 You: check the logs for my-spark-job
 
 Claude:
-  Runs: dbr-logs my-spark-job --level ERROR,WARN --format jsonl
+  Runs: dbr-logs my-spark-job --level ERROR,WARN --focus --format jsonl
   Analyzes output, then responds:
 
   "The latest run (0311-170011-t5450avl) has 3 errors:
@@ -148,6 +151,7 @@ Claude:
 | `--format` | `-f` | `text` (default) or `jsonl`. |
 | `--tail` | `-n` | Show only last N lines. |
 | `--since` | | Show logs since time (e.g. `1h`, `30m`, ISO datetime). |
+| `--focus` | | Suppress Spark/JVM noise (thread dumps, shuffle, task lifecycle). |
 
 ## Configuration
 
