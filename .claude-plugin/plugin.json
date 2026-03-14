@@ -1,0 +1,6 @@
+{
+  "name": "dbr-logs",
+  "version": "1.0.0",
+  "description": "Fetch and analyze Databricks job logs from Claude Code",
+  "skills": ["skills/dbr-logs"]
+}
