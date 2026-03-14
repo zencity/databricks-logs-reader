@@ -61,9 +61,15 @@ def _parse_profiles_output(output: str) -> list[str]:
 
 
 def interactive_profile_setup(available_profiles: list[str]) -> str:
-    print("Available Databricks profiles:", file=sys.stderr)
+    if not sys.stdin.isatty():
+        raise click.UsageError(
+            "Multiple Databricks profiles found but stdin is not a terminal. "
+            f"Use --dbr-profile with one of: {', '.join(available_profiles)}"
+        )
+
+    click.echo("Available Databricks profiles:", err=True)
     for i, profile in enumerate(available_profiles, 1):
-        print(f"  {i}. {profile}", file=sys.stderr)
+        click.echo(f"  {i}. {profile}", err=True)
 
     while True:
         try:
@@ -74,15 +80,14 @@ def interactive_profile_setup(available_profiles: list[str]) -> str:
                 config = load_config()
                 config.setdefault("profile", {})["default"] = selected
                 save_config(config)
-                print(f"Saved default profile: {selected}", file=sys.stderr)
+                click.echo(f"Saved default profile: {selected}", err=True)
                 return selected
         except (ValueError, EOFError, KeyboardInterrupt) as err:
-            if not sys.stdin.isatty():
-                raise click.UsageError(
-                    "Multiple profiles found but no TTY for interactive selection. "
-                    f"Use --dbr-profile with one of: {', '.join(available_profiles)}"
-                ) from err
-        print("Invalid selection, try again.", file=sys.stderr)
+            raise click.UsageError(
+                "Profile selection cancelled. "
+                f"Use --dbr-profile with one of: {', '.join(available_profiles)}"
+            ) from err
+        click.echo("Invalid selection, try again.", err=True)
 
 
 def _serialize_toml(data: dict[str, Any], prefix: str = "") -> str:
