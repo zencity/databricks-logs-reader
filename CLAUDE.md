@@ -5,16 +5,16 @@ CLI tool for fetching and displaying Databricks job logs from Unity Catalog Volu
 ## Commands
 
 ```bash
-uv sync --dev          # Install dependencies
-uv run python -m pytest  # Run tests (74 tests)
-uv run ruff check src/ tests/   # Lint
-uv run ruff format src/ tests/  # Format
-uv run mypy src/       # Type check
+uv sync --dev                             # Install dependencies
+uv run python -m pytest                   # Run tests (74 tests)
+uv run ruff check src/ tests/             # Lint
+uv run ruff format --check src/ tests/    # Format check (add --fix to auto-format)
+uv run python -m mypy src/                # Type check
 ```
 
 ## Architecture
 
-Pipeline: `cli.py` -> `resolver.py` -> `discovery.py` -> `fetcher.py` -> `parser.py` -> `merger.py` -> `filters.py` -> `formatter.py`
+Pipeline: `cli.py` -> `resolver.py` -> `discovery.py` -> `fetcher.py` -> `parser.py` -> `merger.py` -> `noise.py` -> `filters.py` -> `formatter.py`
 
 - `databricks_client.py` - SOLE file importing `databricks.sdk`. All other modules use the adapter.
 - `models.py` - Data models with `StrEnum` types (`SourceType`, `Stream`) and `logging` level ints
