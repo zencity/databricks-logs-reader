@@ -8,3 +8,4 @@ dist/
 .pytest_cache/
 *.pyc
 src/dbr_logs/_version.py
+.claude/settings.local.json
