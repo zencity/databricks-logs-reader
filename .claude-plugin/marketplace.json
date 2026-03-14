@@ -1,9 +1,14 @@
 {
-  "version": "1.0",
+  "name": "dbr-logs-marketplace",
+  "owner": {
+    "name": "Zencity"
+  },
   "plugins": [
     {
       "name": "dbr-logs",
-      "source": "."
+      "source": "./",
+      "description": "Fetch and analyze Databricks job logs from Claude Code",
+      "version": "0.1.1"
     }
   ]
 }
