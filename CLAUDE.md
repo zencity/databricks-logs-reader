@@ -6,7 +6,7 @@ CLI tool for fetching and displaying Databricks job logs from Unity Catalog Volu
 
 ```bash
 uv sync --dev          # Install dependencies
-uv run pytest          # Run tests (70 tests)
+uv run python -m pytest  # Run tests (66 tests)
 uv run ruff check src/ tests/   # Lint
 uv run ruff format src/ tests/  # Format
 uv run mypy src/       # Type check
@@ -22,6 +22,7 @@ Pipeline: `cli.py` -> `resolver.py` -> `discovery.py` -> `fetcher.py` -> `parser
 
 ## Gotchas
 
+- **src layout**: Package lives in `src/dbr_logs/` — IDEs may need `src/` marked as source root
 - `databricks-sdk` has incomplete type stubs — `databricks_client.py` has `ignore_errors = true` in mypy config
 - Driver rotated log files are plain text; executor rotated files are `.gz`
 - Level values are `logging.ERROR`/`logging.WARNING` ints, not strings
