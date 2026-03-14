@@ -1,4 +1,5 @@
 import sys
+from datetime import UTC, datetime
 
 import click
 
@@ -81,8 +82,9 @@ def main(
     click.echo(f"Resolving job: {job_input}...", err=True)
     run_info = resolve_run(client, job_input, run_id, env)
 
+    run_time = _format_run_time(run_info.start_time, run_info.end_time)
     click.echo(
-        f"Run: {run_info.cluster_id} | Job: {run_info.job_name} | Env: {env}",
+        f"Run: {run_info.cluster_id} | Job: {run_info.job_name} | Env: {env} | {run_time}",
         err=True,
     )
 
@@ -110,12 +112,37 @@ def main(
     since_dt = parse_since(since) if since else None
     if focus:
         quiet_filter = build_quiet_filter()
+        before_count = len(merged)
         merged = quiet_filter(merged)
+        filtered_out = before_count - len(merged)
+        click.echo(
+            f"--focus: filtered {filtered_out} noise lines ({len(merged)} remaining)",
+            err=True,
+        )
 
     filter_fn = build_filter(levels, since_dt, tail)
     filtered = filter_fn(merged)
 
     write_entries(filtered, fmt)
+
+
+def _format_run_time(start_ms: int | None, end_ms: int | None) -> str:
+    if start_ms is None:
+        return "Started: unknown"
+    start = datetime.fromtimestamp(start_ms / 1000, tz=UTC)
+    start_str = start.strftime("%Y-%m-%d %H:%M:%S UTC")
+    if end_ms is None:
+        return f"Started: {start_str} (still running)"
+    duration_s = (end_ms - start_ms) / 1000
+    minutes, seconds = divmod(int(duration_s), 60)
+    hours, minutes = divmod(minutes, 60)
+    if hours:
+        dur = f"{hours}h{minutes}m"
+    elif minutes:
+        dur = f"{minutes}m{seconds}s"
+    else:
+        dur = f"{seconds}s"
+    return f"Started: {start_str} ({dur})"
 
 
 def _resolve_profile(override: str | None, config: dict[str, object]) -> str | None:

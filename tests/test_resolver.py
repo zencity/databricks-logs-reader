@@ -58,7 +58,9 @@ class TestResolveRun:
             "dbfs:/Volumes/catalog/schema/logs/my-spark-job",
         )
         client.get_log_destination.return_value = "dbfs:/Volumes/catalog/schema/logs/my-spark-job"
-        client.get_run_cluster_id.return_value = "0311-170011-t5450avl"
+        client.get_run_cluster.return_value = RunCluster(
+            run_id=100, cluster_id="0311-170011-t5450avl"
+        )
         client.get_latest_run.return_value = RunCluster(
             run_id=100, cluster_id="0311-170011-t5450avl"
         )
@@ -80,7 +82,7 @@ class TestResolveRun:
         result = resolve_run(client, "my-spark-job", run_id_override="100", env="prod")
 
         assert result.cluster_id == "0311-170011-t5450avl"
-        client.get_run_cluster_id.assert_called_once_with(100)
+        client.get_run_cluster.assert_called_once_with(100)
 
     def test_resolve_from_url(self) -> None:
         client = self._make_client()
@@ -89,7 +91,7 @@ class TestResolveRun:
 
         assert result.job_name == "my-spark-job"
         assert result.cluster_id == "0311-170011-t5450avl"
-        client.get_run_cluster_id.assert_called_once_with(100)
+        client.get_run_cluster.assert_called_once_with(100)
 
     def test_resolve_from_url_latest_run(self) -> None:
         client = self._make_client()

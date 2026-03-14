@@ -53,15 +53,17 @@ def resolve_run(
         run_id = int(run_id_override) if run_id_override else None
 
     if run_id:
-        cluster_id = client.get_run_cluster_id(run_id)
+        rc = client.get_run_cluster(run_id)
     else:
         rc = client.get_latest_run(job_id)
-        run_id, cluster_id = rc.run_id, rc.cluster_id
+        run_id = rc.run_id
 
     return RunInfo(
         job_name=job_name,
         run_id=run_id,
-        cluster_id=cluster_id,
+        cluster_id=rc.cluster_id,
         env=env,
-        base_path=f"{log_dest}/{cluster_id}",
+        base_path=f"{log_dest}/{rc.cluster_id}",
+        start_time=rc.start_time,
+        end_time=rc.end_time,
     )

@@ -12,7 +12,7 @@ def _mock_client() -> MagicMock:
     client.find_job_by_name.return_value = 1
     client.get_job_name.return_value = "test-job"
     client.get_log_destination.return_value = "dbfs:/Volumes/catalog/schema/logs/test-job"
-    client.get_run_cluster_id.return_value = "0311-test-cluster"
+    client.get_run_cluster.return_value = RunCluster(run_id=100, cluster_id="0311-test-cluster")
     client.get_latest_run.return_value = RunCluster(run_id=100, cluster_id="0311-test-cluster")
 
     def list_dir(path: str) -> list:

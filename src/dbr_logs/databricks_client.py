@@ -17,6 +17,8 @@ class DirEntry:
 class RunCluster:
     run_id: int
     cluster_id: str
+    start_time: int | None = None  # epoch milliseconds from Databricks API
+    end_time: int | None = None
 
 
 def _sdk_error_to_usage_error(e: DatabricksError, context: str) -> click.UsageError:
@@ -67,7 +69,7 @@ class DatabricksClient:
             raise _sdk_error_to_usage_error(e, f"Cannot access job {job_id}") from e
         return self._extract_log_destination(job, job_id)
 
-    def get_run_cluster_id(self, run_id: int) -> str:
+    def get_run_cluster(self, run_id: int) -> RunCluster:
         try:
             run = self._w.jobs.get_run(run_id=run_id)
         except NotFound as e:
@@ -76,7 +78,12 @@ class DatabricksClient:
             raise _sdk_error_to_usage_error(e, f"Cannot access run {run_id}") from e
         cluster_id = self._extract_cluster_id(run)
         if cluster_id:
-            return cluster_id
+            return RunCluster(
+                run_id=run_id,
+                cluster_id=cluster_id,
+                start_time=getattr(run, "start_time", None),
+                end_time=getattr(run, "end_time", None),
+            )
         self._raise_no_cluster(run_id, run)
 
     def get_latest_run(self, job_id: int) -> RunCluster:
@@ -93,7 +100,12 @@ class DatabricksClient:
             raise _sdk_error_to_usage_error(e, f"Run {run_id} not found") from e
         cluster_id = self._extract_cluster_id(full_run)
         if cluster_id:
-            return RunCluster(run_id=run_id, cluster_id=cluster_id)
+            return RunCluster(
+                run_id=run_id,
+                cluster_id=cluster_id,
+                start_time=getattr(full_run, "start_time", None),
+                end_time=getattr(full_run, "end_time", None),
+            )
         self._raise_no_cluster(run_id, full_run)
 
     def list_directory(self, path: str) -> list[DirEntry]:

@@ -49,6 +49,8 @@ class RunInfo:
     cluster_id: str  # filesystem directory name (e.g. "0311-170011-t5450avl")
     env: str
     base_path: str  # full path to the run's log directory
+    start_time: int | None = None  # epoch milliseconds from Databricks API
+    end_time: int | None = None
     has_driver: bool = False
     has_executor: bool = False
     executor_count: int = 0
