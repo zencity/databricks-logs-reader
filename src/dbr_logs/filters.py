@@ -21,6 +21,7 @@ def build_filter(
     since: datetime | None,
     tail: int | None,
 ) -> Callable[[list[LogEntry]], list[LogEntry]]:
+    """Build a composite filter from level, time, and tail criteria."""
     predicates: list[Callable[[list[LogEntry]], list[LogEntry]]] = []
 
     if levels:
@@ -50,6 +51,7 @@ def _since_filter(entries: list[LogEntry], since: datetime) -> list[LogEntry]:
 
 
 def parse_since(since_str: str) -> datetime:
+    """Parse relative ('2h', '30m') or ISO datetime string to UTC datetime."""
     m = RELATIVE_RE.match(since_str)
     if m:
         amount, unit = int(m.group(1)), m.group(2)

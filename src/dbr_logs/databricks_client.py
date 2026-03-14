@@ -24,6 +24,8 @@ def _sdk_error_to_usage_error(e: DatabricksError, context: str) -> click.UsageEr
 
 
 class DatabricksClient:
+    """Adapter around databricks.sdk — sole file importing the SDK."""
+
     def __init__(self, profile: str | None = None) -> None:
         try:
             self._w = WorkspaceClient(profile=profile)

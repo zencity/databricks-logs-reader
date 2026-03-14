@@ -14,6 +14,7 @@ def fetch_sources(
     source_filter: str,
     stream_filter: str,
 ) -> dict[str, str]:
+    """Download log files matching source/stream filters. Returns {path: content}."""
     pairs = _apply_source_filter(sources, source_filter, stream_filter)
     if not pairs:
         return {}

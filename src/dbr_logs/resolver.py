@@ -21,6 +21,7 @@ class ParsedUrl:
 
 
 def parse_databricks_url(url: str) -> ParsedUrl:
+    """Extract job_id and optional run_id from a Databricks workspace URL."""
     for pattern in URL_PATTERNS:
         m = pattern.search(url)
         if m:
@@ -37,6 +38,7 @@ def resolve_run(
     run_id_override: str | None,
     env: str,
 ) -> RunInfo:
+    """Resolve a job name or URL to a RunInfo with cluster ID and log path."""
     is_url = job_input.startswith("http://") or job_input.startswith("https://")
 
     if is_url:

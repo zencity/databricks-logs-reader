@@ -37,6 +37,7 @@ def write_entries(
     fmt: str,
     output: TextIO | None = None,
 ) -> None:
+    """Write log entries to output in text or jsonl format."""
     if output is None:
         output = sys.stdout
     format_fn = format_jsonl if fmt == "jsonl" else format_text

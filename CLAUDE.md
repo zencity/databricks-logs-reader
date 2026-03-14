@@ -6,7 +6,7 @@ CLI tool for fetching and displaying Databricks job logs from Unity Catalog Volu
 
 ```bash
 uv sync --dev          # Install dependencies
-uv run python -m pytest  # Run tests (66 tests)
+uv run python -m pytest  # Run tests (74 tests)
 uv run ruff check src/ tests/   # Lint
 uv run ruff format src/ tests/  # Format
 uv run mypy src/       # Type check

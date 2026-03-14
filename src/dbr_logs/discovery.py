@@ -21,6 +21,7 @@ def discover_sources(
     include_log4j: bool,
     include_stacktrace: bool,
 ) -> list[LogSource]:
+    """Discover driver and executor log sources for a given run."""
     sources: list[LogSource] = []
 
     driver_path = f"{run_info.base_path}/driver"

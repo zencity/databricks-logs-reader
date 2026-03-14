@@ -31,6 +31,7 @@ TIMESTAMP_PATTERNS = [
 
 
 def parse_entries(content: str, source: LogSource, log_file: LogFile) -> list[LogEntry]:
+    """Parse raw log file content into structured LogEntry objects."""
     entries = []
     for raw_line in content.splitlines():
         if not raw_line.strip():
