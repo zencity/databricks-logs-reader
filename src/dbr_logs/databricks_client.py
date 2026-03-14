@@ -3,6 +3,8 @@ from typing import NoReturn
 
 import click
 from databricks.sdk import WorkspaceClient
+from databricks.sdk.errors import NotFound, PermissionDenied, Unauthenticated
+from databricks.sdk.errors.base import DatabricksError
 
 
 @dataclass
@@ -17,9 +19,16 @@ class RunCluster:
     cluster_id: str
 
 
+def _sdk_error_to_usage_error(e: DatabricksError, context: str) -> click.UsageError:
+    return click.UsageError(f"{context}: {e}")
+
+
 class DatabricksClient:
     def __init__(self, profile: str | None = None) -> None:
-        self._w = WorkspaceClient(profile=profile)
+        try:
+            self._w = WorkspaceClient(profile=profile)
+        except ValueError as e:
+            raise click.UsageError(f"Invalid Databricks profile '{profile}': {e}") from e
 
     def find_job_by_name(self, name: str) -> int:
         jobs = list(self._w.jobs.list(name=name))
@@ -28,32 +37,58 @@ class DatabricksClient:
         return jobs[0].job_id
 
     def get_job_name(self, job_id: int) -> str:
-        job = self._w.jobs.get(job_id=job_id)
+        try:
+            job = self._w.jobs.get(job_id=job_id)
+        except NotFound as e:
+            raise _sdk_error_to_usage_error(e, f"Job {job_id} not found") from e
+        except (PermissionDenied, Unauthenticated) as e:
+            raise _sdk_error_to_usage_error(e, f"Cannot access job {job_id}") from e
         return job.settings.name
 
     def get_job_name_and_log_destination(self, job_id: int) -> tuple[str, str]:
-        job = self._w.jobs.get(job_id=job_id)
+        try:
+            job = self._w.jobs.get(job_id=job_id)
+        except NotFound as e:
+            raise _sdk_error_to_usage_error(e, f"Job {job_id} not found") from e
+        except (PermissionDenied, Unauthenticated) as e:
+            raise _sdk_error_to_usage_error(e, f"Cannot access job {job_id}") from e
         name = job.settings.name
         log_dest = self._extract_log_destination(job, job_id)
         return (name, log_dest)
 
     def get_log_destination(self, job_id: int) -> str:
-        job = self._w.jobs.get(job_id=job_id)
+        try:
+            job = self._w.jobs.get(job_id=job_id)
+        except NotFound as e:
+            raise _sdk_error_to_usage_error(e, f"Job {job_id} not found") from e
+        except (PermissionDenied, Unauthenticated) as e:
+            raise _sdk_error_to_usage_error(e, f"Cannot access job {job_id}") from e
         return self._extract_log_destination(job, job_id)
 
     def get_run_cluster_id(self, run_id: int) -> str:
-        run = self._w.jobs.get_run(run_id=run_id)
+        try:
+            run = self._w.jobs.get_run(run_id=run_id)
+        except NotFound as e:
+            raise _sdk_error_to_usage_error(e, f"Run {run_id} not found") from e
+        except (PermissionDenied, Unauthenticated) as e:
+            raise _sdk_error_to_usage_error(e, f"Cannot access run {run_id}") from e
         cluster_id = self._extract_cluster_id(run)
         if cluster_id:
             return cluster_id
         self._raise_no_cluster(run_id, run)
 
     def get_latest_run(self, job_id: int) -> RunCluster:
-        runs = list(self._w.jobs.list_runs(job_id=job_id, limit=1))
+        try:
+            runs = list(self._w.jobs.list_runs(job_id=job_id, limit=1))
+        except (PermissionDenied, Unauthenticated) as e:
+            raise _sdk_error_to_usage_error(e, f"Cannot access runs for job {job_id}") from e
         if not runs:
             raise click.UsageError(f"No runs found for job {job_id}")
         run_id = runs[0].run_id
-        full_run = self._w.jobs.get_run(run_id=run_id)
+        try:
+            full_run = self._w.jobs.get_run(run_id=run_id)
+        except NotFound as e:
+            raise _sdk_error_to_usage_error(e, f"Run {run_id} not found") from e
         cluster_id = self._extract_cluster_id(full_run)
         if cluster_id:
             return RunCluster(run_id=run_id, cluster_id=cluster_id)
@@ -61,14 +96,24 @@ class DatabricksClient:
 
     def list_directory(self, path: str) -> list[DirEntry]:
         vol_path = self._volume_path(path)
-        return [
-            DirEntry(name=e.name, is_directory=bool(e.is_directory))
-            for e in self._w.files.list_directory_contents(vol_path)
-        ]
+        try:
+            return [
+                DirEntry(name=e.name, is_directory=bool(e.is_directory))
+                for e in self._w.files.list_directory_contents(vol_path)
+            ]
+        except NotFound as e:
+            raise _sdk_error_to_usage_error(e, f"Log path not found: {path}") from e
+        except (PermissionDenied, Unauthenticated) as e:
+            raise _sdk_error_to_usage_error(e, f"Cannot access log path: {path}") from e
 
     def download_file(self, path: str) -> bytes:
         vol_path = self._volume_path(path)
-        response = self._w.files.download(vol_path)
+        try:
+            response = self._w.files.download(vol_path)
+        except NotFound as e:
+            raise _sdk_error_to_usage_error(e, f"File not found: {path}") from e
+        except (PermissionDenied, Unauthenticated) as e:
+            raise _sdk_error_to_usage_error(e, f"Cannot access file: {path}") from e
         return response.contents.read()
 
     @staticmethod
