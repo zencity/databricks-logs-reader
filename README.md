@@ -82,9 +82,6 @@ dbr-logs "https://dbc-xxx.cloud.databricks.com/jobs/12345/runs/67890?o=123"
 # Show only errors
 dbr-logs my-job-name --level ERROR
 
-# Filter with regex
-dbr-logs my-job-name --grep "OOM|OutOfMemory"
-
 # Show only executor logs
 dbr-logs my-job-name --source executor
 
@@ -145,8 +142,7 @@ Claude:
 | `--dbr-profile` | `-p` | Databricks CLI profile name. |
 | `--source` | `-s` | `driver`, `executor`, `executor:N`, or `all` (default). |
 | `--stream` | | `stderr`, `stdout`, or `all` (default). |
-| `--level` | `-l` | Comma-separated: ERROR, WARN, INFO, DEBUG. |
-| `--grep` | `-g` | Filter lines matching regex pattern. |
+| `--level` | `-l` | Exact match, comma-separated: ERROR, WARN, INFO, DEBUG. |
 | `--include-log4j` | | Include driver log4j files. |
 | `--include-stacktrace` | | Include driver stacktrace files. |
 | `--format` | `-f` | `text` (default) or `jsonl`. |

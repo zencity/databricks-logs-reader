@@ -18,7 +18,6 @@ LEVEL_NAME_MAP: dict[str, int] = {
 
 def build_filter(
     levels: list[str] | None,
-    grep_pattern: str | None,
     since: datetime | None,
     tail: int | None,
 ) -> Callable[[list[LogEntry]], list[LogEntry]]:
@@ -27,10 +26,6 @@ def build_filter(
     if levels:
         level_ints = {LEVEL_NAME_MAP[lv.upper()] for lv in levels if lv.upper() in LEVEL_NAME_MAP}
         predicates.append(lambda entries, lv=level_ints: _level_filter(entries, lv))  # type: ignore[misc]
-
-    if grep_pattern:
-        compiled = re.compile(grep_pattern)
-        predicates.append(lambda entries, p=compiled: _grep_filter(entries, p))  # type: ignore[misc]
 
     if since:
         predicates.append(lambda entries, s=since: _since_filter(entries, s))  # type: ignore[misc]
@@ -48,10 +43,6 @@ def build_filter(
 
 def _level_filter(entries: list[LogEntry], levels: set[int]) -> list[LogEntry]:
     return [e for e in entries if e.level in levels]
-
-
-def _grep_filter(entries: list[LogEntry], pattern: re.Pattern[str]) -> list[LogEntry]:
-    return [e for e in entries if pattern.search(e.line)]
 
 
 def _since_filter(entries: list[LogEntry], since: datetime) -> list[LogEntry]:

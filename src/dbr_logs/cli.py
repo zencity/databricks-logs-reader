@@ -26,8 +26,7 @@ from dbr_logs.resolver import resolve_run
 @click.option("--dbr-profile", "-p", default=None, help="Databricks CLI profile name")
 @click.option("--source", "-s", default="all", help="driver, executor, executor:N, all")
 @click.option("--stream", default="all", help="stderr, stdout, all")
-@click.option("--level", "-l", default=None, help="Comma-separated: ERROR, WARN, INFO, DEBUG")
-@click.option("--grep", "-g", default=None, help="Filter lines matching regex pattern")
+@click.option("--level", "-l", default=None, help="Exact match, comma-separated: ERROR,WARN,INFO,DEBUG (e.g. WARN,ERROR for both)")
 @click.option("--include-log4j", is_flag=True, default=False, help="Include driver log4j files")
 @click.option(
     "--include-stacktrace", is_flag=True, default=False, help="Include driver stacktrace files"
@@ -50,7 +49,6 @@ def main(
     source: str,
     stream: str,
     level: str | None,
-    grep: str | None,
     include_log4j: bool,
     include_stacktrace: bool,
     fmt: str,
@@ -97,7 +95,7 @@ def main(
 
     levels = [lv.strip() for lv in level.split(",")] if level else None
     since_dt = parse_since(since) if since else None
-    filter_fn = build_filter(levels, grep, since_dt, tail)
+    filter_fn = build_filter(levels, since_dt, tail)
     filtered = filter_fn(merged)
 
     write_entries(filtered, fmt)

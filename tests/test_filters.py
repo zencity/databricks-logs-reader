@@ -29,36 +29,22 @@ class TestLevelFilter:
             _entry(logging.WARNING, "warn"),
             _entry(logging.INFO, "info"),
         ]
-        f = build_filter(levels=["ERROR"], grep_pattern=None, since=None, tail=None)
+        f = build_filter(levels=["ERROR"], since=None, tail=None)
         result = f(entries)
         assert len(result) == 1
         assert result[0].line == "err"
 
     def test_filters_by_multiple_levels(self) -> None:
         entries = [_entry(logging.ERROR), _entry(logging.WARNING), _entry(logging.INFO)]
-        f = build_filter(levels=["ERROR", "WARN"], grep_pattern=None, since=None, tail=None)
+        f = build_filter(levels=["ERROR", "WARN"], since=None, tail=None)
         assert len(f(entries)) == 2
-
-
-class TestGrepFilter:
-    def test_filters_by_regex(self) -> None:
-        entries = [_entry(line="OutOfMemoryError"), _entry(line="normal line")]
-        f = build_filter(levels=None, grep_pattern="OutOfMemory", since=None, tail=None)
-        result = f(entries)
-        assert len(result) == 1
-        assert "OutOfMemory" in result[0].line
-
-    def test_regex_pattern(self) -> None:
-        entries = [_entry(line="error code 404"), _entry(line="error code 500")]
-        f = build_filter(levels=None, grep_pattern=r"code 5\d+", since=None, tail=None)
-        assert len(f(entries)) == 1
 
 
 class TestSinceFilter:
     def test_filters_by_time(self) -> None:
         entries = [_entry(ts_minute=0), _entry(ts_minute=30), _entry(ts_minute=59)]
         since = datetime(2026, 3, 11, 21, 30, 0, tzinfo=UTC)
-        f = build_filter(levels=None, grep_pattern=None, since=since, tail=None)
+        f = build_filter(levels=None, since=since, tail=None)
         result = f(entries)
         assert len(result) == 2
 
@@ -66,7 +52,7 @@ class TestSinceFilter:
 class TestTailFilter:
     def test_returns_last_n(self) -> None:
         entries = [_entry(line=f"line{i}") for i in range(10)]
-        f = build_filter(levels=None, grep_pattern=None, since=None, tail=3)
+        f = build_filter(levels=None, since=None, tail=3)
         result = f(entries)
         assert len(result) == 3
         assert result[0].line == "line7"

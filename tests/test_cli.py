@@ -71,32 +71,6 @@ class TestCliEndToEnd:
         assert '"source_type"' in result.output
         assert '"driver"' in result.output
 
-    @patch("dbr_logs.cli.DatabricksClient")
-    @patch("dbr_logs.cli.load_config", return_value={})
-    @patch("dbr_logs.cli.list_databricks_profiles", return_value=["DEFAULT"])
-    def test_grep_filter(
-        self, mock_profiles: MagicMock, mock_config: MagicMock, mock_cls: MagicMock
-    ) -> None:
-        mock_cls.return_value = _mock_client()
-        runner = CliRunner()
-
-        result = runner.invoke(main, ["test-job", "--grep", "timeout"])
-        assert result.exit_code == 0
-        assert "Connection timeout" in result.output
-
-    @patch("dbr_logs.cli.DatabricksClient")
-    @patch("dbr_logs.cli.load_config", return_value={})
-    @patch("dbr_logs.cli.list_databricks_profiles", return_value=["DEFAULT"])
-    def test_grep_no_match(
-        self, mock_profiles: MagicMock, mock_config: MagicMock, mock_cls: MagicMock
-    ) -> None:
-        mock_cls.return_value = _mock_client()
-        runner = CliRunner()
-
-        result = runner.invoke(main, ["test-job", "--grep", "nomatch"])
-        assert result.exit_code == 0
-        assert "Connection timeout" not in result.output
-
     def test_help(self) -> None:
         runner = CliRunner()
         result = runner.invoke(main, ["--help"])
