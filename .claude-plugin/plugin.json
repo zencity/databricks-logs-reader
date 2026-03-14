@@ -2,5 +2,8 @@
   "name": "dbr-logs",
   "version": "1.0.0",
   "description": "Fetch and analyze Databricks job logs from Claude Code",
+  "author": {
+    "name": "Zencity"
+  },
   "skills": ["skills/dbr-logs"]
 }

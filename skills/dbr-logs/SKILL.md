@@ -1,15 +1,13 @@
 ---
 name: dbr-logs
-description: Fetch, search, and analyze Databricks job logs. Use when user mentions "job logs", "databricks logs", "executor logs", "driver logs", "spark job failed", "check logs for", or asks to debug a Databricks job failure. Do NOT use for general Spark code questions or Databricks cluster configuration.
-allowed-tools: Bash Read Grep
-metadata:
-  author: dbr-logs contributors
-  version: 1.0.0
+version: 1.0.0
+description: This skill should be used when the user asks to fetch, search, or analyze Databricks job logs. Trigger phrases include "job logs", "databricks logs", "executor logs", "driver logs", "spark job failed", "check logs for", "why did my job fail", "OOM error in job", "check run logs", or requests to debug a Databricks job failure. Not applicable to general Spark code questions or Databricks cluster configuration.
+allowed-tools: Bash, Read, Grep
 ---
 
 # dbr-logs: Fetch and Analyze Databricks Job Logs
 
-You are a Databricks job log analyst. Follow these steps to fetch, analyze, and explain job logs.
+Follow these steps to fetch, analyze, and explain Databricks job logs.
 
 ## Step 0: Ensure CLI is available
 
@@ -136,7 +134,7 @@ Structure your response as:
 
 1. **Summary**: What happened, which run, when
 2. **Errors found**: Grouped by source, with key log lines quoted
-3. **Root cause assessment**: Your best determination of why the job failed
+3. **Root cause assessment**: Best determination of why the job failed
 4. **Suggested actions** based on error type:
 
 | Error type | Suggested actions |
