@@ -157,6 +157,17 @@ Claude:
 
 On first run with multiple Databricks profiles, you'll be prompted to select a default. Config is saved to `~/.config/dbr-logs/config.toml`.
 
+## Releasing
+
+Version is derived from git tags via [hatch-vcs](https://github.com/ofek/hatch-vcs) — no version string to maintain in source code.
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+This triggers the CI pipeline which: builds the package -> creates a GitHub Release with auto-generated notes -> publishes to PyPI.
+
 ## Limitations
 
 - Only Unity Catalog Volumes log destinations are supported. S3 destinations are not yet supported.

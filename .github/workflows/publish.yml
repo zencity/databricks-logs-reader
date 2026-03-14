@@ -51,6 +51,7 @@ jobs:
 
   publish:
     name: Publish to PyPI
+    if: github.repository == 'zencity/databricks-logs-reader'
     needs: [build, github-release]
     runs-on: ubuntu-latest
     environment:
