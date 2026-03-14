@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "dbr-logs"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Fetch and display Databricks job logs from Unity Catalog Volumes"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -31,6 +31,13 @@ Issues = "https://github.com/zencity/databricks-logs-reader/issues"
 
 [project.scripts]
 dbr-logs = "dbr_logs.cli:main"
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.0"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/dbr_logs/_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/dbr_logs"]

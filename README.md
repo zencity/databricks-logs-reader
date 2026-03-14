@@ -39,7 +39,11 @@ The manual process to find what went wrong:
 5. **Repeat across executors** — for a job with 9 executors, that's potentially 9 x 4 files to check
 6. **Cross-reference timestamps** — the root cause is often in one source, but the symptoms appear in another
 
-`dbr-logs` replaces all of that with a single command. It discovers the log structure, downloads and decompresses all files, merges everything chronologically with source labels, and lets you filter by level, source, or regex.
+For background on how Python logging works in Databricks and why it ends up in this structure, see [Everything You Wanted to Know About Python Logging in Databricks](https://medium.com/python-in-plain-english/everything-you-wanted-to-know-about-python-logging-in-databricks-0c64da6f56c9).
+
+There are heavier alternatives — Databricks' own [Practitioner's Ultimate Guide to Scalable Logging](https://www.databricks.com/blog/practitioners-ultimate-guide-scalable-logging) describes a full logging pipeline, and you could also route Databricks logs to Datadog or similar observability platforms. But these solutions carry significant ongoing costs and infrastructure overhead for something most teams only need occasionally when debugging a failed job. `dbr-logs` is a zero-cost, zero-infrastructure alternative: install a CLI tool, run one command, get your answer.
+
+`dbr-logs` replaces the manual process with a single command. It discovers the log structure, downloads and decompresses all files, merges everything chronologically with source labels, and lets you filter by level, source, or regex.
 
 ## Prerequisites
 
@@ -50,14 +54,17 @@ The manual process to find what went wrong:
 ## Installation
 
 ```bash
-# Install with uv
-uv tool install .
+# Install as a CLI tool with uv (recommended)
+uv tool install dbr-logs
 
-# Or with pip
-pip install .
+# Or with pipx (isolated environment)
+pipx install dbr-logs
+
+# Or with pip (use --user to install globally without affecting your venv)
+pip install --user dbr-logs
 
 # Or run directly without installing
-uvx --from . dbr-logs <job-name>
+uvx dbr-logs <job-name>
 ```
 
 ## Usage

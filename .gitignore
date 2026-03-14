@@ -7,3 +7,4 @@ dist/
 .ruff_cache/
 .pytest_cache/
 *.pyc
+src/dbr_logs/_version.py
