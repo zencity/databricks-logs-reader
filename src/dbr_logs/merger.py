@@ -1,13 +1,14 @@
 from collections.abc import Iterator
-from datetime import datetime
+from datetime import UTC, datetime
 from heapq import merge
 
 from dbr_logs.models import LogEntry
 
-EPOCH = datetime.min
+EPOCH = datetime.min.replace(tzinfo=UTC)
 
 
 def merge_entries(entries_by_file: list[list[LogEntry]]) -> list[LogEntry]:
+    """Merge log entries from multiple files into a single chronologically sorted list."""
     if not entries_by_file:
         return []
     if len(entries_by_file) == 1:

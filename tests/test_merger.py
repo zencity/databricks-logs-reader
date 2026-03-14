@@ -45,3 +45,17 @@ class TestMergeEntries:
         file_a = [_entry(5, line="a-first"), _entry(5, line="a-second")]
         merged = merge_entries([file_a])
         assert [e.line for e in merged] == ["a-first", "a-second"]
+
+    def test_merges_files_with_no_timestamps(self) -> None:
+        """Files with no timestamps at all should use EPOCH fallback without crashing.
+
+        Regression: EPOCH was timezone-naive while parsed timestamps are UTC-aware,
+        causing 'can't compare offset-naive and offset-aware datetimes'.
+        """
+        file_a = [_entry(1, line="a1")]
+        file_b = [_entry(None, line="b-no-ts")]
+
+        merged = merge_entries([file_a, file_b])
+        assert len(merged) == 2
+        assert merged[0].line == "b-no-ts"
+        assert merged[1].line == "a1"
