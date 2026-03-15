@@ -134,7 +134,7 @@ Claude:
   Suggested actions:
   - Check executor at 10.177.10.232 for resource pressure
   - Enable spark.shuffle.io.retryWait / spark.shuffle.io.maxRetries
-  - Review shuffle partitions to reduce per-task data volume"
+  - Review shuffle partitions to reduce per-task data volume
 ```
 
 ## Options
