@@ -68,7 +68,8 @@ def _discover_driver(
                 )
             )
 
-    source.files.sort(key=lambda f: (f.stream, f.file_timestamp or datetime.max))
+    _max_ts = datetime.max.replace(tzinfo=UTC)
+    source.files.sort(key=lambda f: (f.stream, f.file_timestamp or _max_ts))
     return source
 
 
@@ -121,7 +122,8 @@ def _discover_single_executor(
                 )
             )
 
-    source.files.sort(key=lambda f: (f.stream, f.file_timestamp or datetime.max))
+    _max_ts = datetime.max.replace(tzinfo=UTC)
+    source.files.sort(key=lambda f: (f.stream, f.file_timestamp or _max_ts))
     return source
 
 
